@@ -1,48 +1,91 @@
-{% from 'macros/helpers.html' import sprite %} {# Nunjucks Templating! Homepage: https://mozilla.github.io/nunjucks/ Docs:
-https://mozilla.github.io/nunjucks/api.html {% include "shared/header.html" %} #} {% block content %} {% include "shared/header.html"
-%}
+{% include "shared/header.html" %}
+
+<div class="container" ng-controller="AddEventController">
+    <center>
+        <h2>Restaurants</h2></center>
+
+    <input type="checkbox" checked data-toggle="toggle" ng-model="showres" ng-init="showres = true" data-size="normal">
+
+
+    <form role="form">
+        <legend>Add your event</legend>
+        <div class="form-group">
+
+            <div class="form-group">
+                <label for="foursquare-keyword">Keyword</label>
+                <input name="foursquare-keyword" class="form-control" placeholder="e.g. sushi, donuts" ng-model="foursquarekeyword" autocomplete="foursquare-keyword">
+                <br>
+                <label for="foursquare-city">City</label>
+                <select ng-model="fourquarecity" class="form-control" ng-options="x for x in foursquarecities" ng-init="fourquarecity = 'Vienna,AT'"></select>
+                <br>
+                <button type="submit" class="btn btn-primary btn-block" ng-click="foursquare(foursquarekeyword,fourquarecity)">Get FourSquare Recommendations</button>
+                <br>
+            </div>
+
+    </form>
+
+
+    <!--<button type="submit" class="btn btn-primary btn-block" ng-click="rateObject(img['id'])">Test</button>
+<button type="submit" class="btn btn-primary btn-block" ng-click="getRating(img['id'])">Get Rating</button>
+<uib-rating ng-model="img.myrating" max="max" read-only="isReadonly" on-hover="hoveringOver(value)" on-leave="overStar = null"
+titles="['one','two','three']" aria-labelledby="default-rating"></uib-rating>-->
+
+    {% raw %}
+    <div class="container">
+        <h2>Hover Rows</h2>
+        <p>The .table-hover class enables a hover state on table rows:</p>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Adress</th>
+                    <th>Rating on Foursquare</th>
+                    <th>Your Rating</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="img in images|filter:search.name">
+                    <td>
+                        <a href="{{img.link}}">
+                            <h4>{{img['name']}}</h4>
+                            <img src="{{img.url}}" alt="{{img.name}}">
+                        </a>
+                    </td>
+                    <td>
+                        <h5>{{img['address']}}</h5></td>
+                    <td>
+                        <h5>{{img['rating']}}</h5></td>
+                    <td>
+                        <uib-rating ng-model="img.myrating" max="max" read-only="isReadonly" on-hover="hoveringOver(value)" on-leave="overStar = null"
+                        titles="['one','two','three']" aria-labelledby="default-rating"></uib-rating>
+                        <button type="submit" class="btn btn-primary btn-block" ng-click="submitRating(img)">Submit Rating</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    {% endraw %}
 
 
 
-<center><h2>Events</h2></center>
-<div class="container-fluid">
-<table class="table table-bordered table-hover table-condensed">
-    <tr style="font-weight: bold">
-        <td style="width:35%">Event</td>
-        <td style="width:20%">Type</td>
-        <td style="width:20%">Start</td>
-        <td style="width:20%">End</td>
-    </tr>
-    <tr ng-repeat="event in events|filter:search.name">
-        
-<td>
-    {% raw %} <span><a href="#/eventdetails/{{event.$id}}">{{event.title}}  </a><input type="text" ng-model="event.mytext" ng-show="checkeditmode(event)"/>  {% endraw %} 
-        </span>
-</td>
-      
-<td>
-    {% raw %}<span>{{event.type}}</span> {% endraw %}
-</td>
-      
-<td>
-    <span>
-         {% raw %} <span>{{parseDate(event.startdate)}} {% endraw %} 
-        </span>
-</td>
- 
-<td>
-    <span>
-         {% raw %} <span>{{parseDate(event.enddate)}} {% endraw %} 
-        </span>
-</td> 
- 
- 
-                
-        
-    </tr>
-</table>
-</div> 
+    <div id="barchart"></div>
 
 
+    <div ng-controller='ChartCtrl'>
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Add Data to PieChart</h3>
+            </div>
+            <div class="panel-body">
+                <form novalidate class="simple-form">
+                    <button type="submit" class="btn btn-primary" ng-click="changefunction()">Change</button>
+                    <button type="submit" class="btn btn-primary" ng-click="add()">Do Something</button>
+                    <button type="submit" class="btn btn-primary" ng-click="doticks()">Add Ticks</button>
+                    <button type="submit" class="btn btn-primary" ng-click="changescale()">Change Scale</button>
+                </form>
+            </div>
+        </div>
+        <barchart></barchart>
+    </div>
 
-{% endblock %}
+</div>

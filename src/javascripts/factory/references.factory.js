@@ -14,6 +14,12 @@ function refFac() {
         return user_ref;
     }
 
+
+    obj.restaurant_ref = function () {
+        var restaurant_ref = new Firebase("https://flickering-inferno-6917.firebaseio.com/restaurants");
+        return restaurant_ref;
+    }
+
     return obj;
 
 }

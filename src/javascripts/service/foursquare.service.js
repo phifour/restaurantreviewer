@@ -37,6 +37,33 @@ this.getphotos = function(list_of_ids){
                 return list_of_promisses;
 };
 
+
+this.getratings = function(list_of_ids){
+                // console.log("data.respons", data.data.response.venues);
+                // $scope.locations = data.response.venues;
+                // console.log("$scope.locations", $scope.locations);
+                list_of_promisses = [];
+                for (var i=0;i<list_of_ids.length;i++){
+                   console.log("id",list_of_ids[i].id);
+                   var id = list_of_ids[i].id;
+                   var photourl = 'https://api.foursquare.com/v2/venues/' + id;
+                   var api1 = $http({
+                        method: 'GET',
+                        timeout: 5000000,
+                        url: photourl,
+                        params: {
+                            client_id: 'DATGSLTPSJN2AUSVTGOK12NIGHPOTDD4Z1SEZ0XLPN0DOPBU',
+                            client_secret: '1YQUJF4STX2FTU4HMDDA5IFZEJSNSJB35RBTGP3SKKR0M4RL',
+                            limit:1,
+                            v: 20130815
+                        },
+                        contentType: 'application/json; charset=utf-8'
+                    })
+                    list_of_promisses.push(api1);
+                }
+                return list_of_promisses;
+};
+
 this.getvenues = function (foursquarekeyword, fourquarecity) {
 
        var promise = $http({

@@ -11,7 +11,7 @@ function AddEventController($scope, CheckValuesService, FourSquareService,$q,$lo
 
     $scope.authData = undefined;
     // Create our Firebase reference
-    var ref = refFac.ref();
+    var restaurant_ref = refFac.restaurant_ref();
      
     $scope.parseDate = function (x) {
         if (x != null) {
@@ -32,10 +32,6 @@ function AddEventController($scope, CheckValuesService, FourSquareService,$q,$lo
 
     $scope.images = [];
 
-    // $scope.guestlist = [];
-
-
-
     $scope.event = {
       title:undefined,
       type:undefined,
@@ -43,30 +39,6 @@ function AddEventController($scope, CheckValuesService, FourSquareService,$q,$lo
       location:undefined,
       guestlist:[]
       };
-
-
-    $scope.addguest = function (guest) {
-        console.log($scope.event.guestlist);
-        if (guest != undefined) {
-            if ($scope.event.guestlist.indexOf(guest) >= 0) {
-                //console.log("guest double entry");
-            } else {
-                $scope.event.guestlist.push(guest);
-            }
-        }
-    };
-
-    $scope.removeguest = function (guest) {
-        var index = $scope.event.guestlist.indexOf(guest);
-        if (index > -1) {
-            $scope.event.guestlist.splice(index, 1);
-        }
-    };
-
-
-
-
-
 
     $scope.foursquarestate = {show:false,name:"Show Foursquare Recommendations",visible:false};
     
@@ -93,38 +65,83 @@ function AddEventController($scope, CheckValuesService, FourSquareService,$q,$lo
 
     $scope.usefoursquareloc = function (name,address) {
         $scope.event.location = name + ", " + address;
-        // $scope.apply;
-        // console.log('address', $scope.selectedlocation)
     }
     
-    var foursquarefcnt = FourSquareService.getvenues;
+    $scope.rateObject = function(id){
+        console.log('id',id);
+        // console.log('test12345');
+        var obj = {id:id,user:'Wolfgang'};
+       restaurant_ref.push(obj); 
+    }
     
-    $scope.foursquare = function(foursquarekeyword,fourquarecity){
+    $scope.getRating = function (id) {
+        restaurant_ref.orderByKey().on("child_added", function (snapshot) {
+            console.log(snapshot.key());
+        });
+
+
+        restaurant_ref.orderByValue().on("value", function (snapshot) {
+            snapshot.forEach(function (data) {
+                console.log("The " + data.key() + " dinosaur's score is " + data.val().id);
+            });
+        }); 
+        
+        restaurant_ref.orderByChild("id").equalTo('4dd548a3b0fb7a332e7cc428').on("child_added", function (snapshot) {
+            console.log('Test EqualTo',snapshot.key(),'user',snapshot.val().user);
+        });
+                       
+    }
+    
+    $scope.submitRating = function(img){
+        console.log('img',img);        
+        console.log('img.id',img.id);
+        // console.log('test12345');
+        var obj = {id:img.id,user:'Wolfgang',myrating:img.myrating};
+       //restaurant_ref.push(obj);              
+       restaurant_ref.update(obj);         
+    }
+
+      
+    var foursquarefcnt = FourSquareService.getvenues;
+        
+    function getfoursquare(foursquarekeyword,fourquarecity){
         // $scope.foursquarestate.visible = true;
         foursquarefcnt(foursquarekeyword,fourquarecity)
         .then(function (data, status, headers, config) {  
                 console.log("data.respons", data.data.response.venues);
                 var getphotos = FourSquareService.getphotos;
-                return {photos:getphotos(data.data.response.venues),data:data};
+                var getratings = FourSquareService.getratings;
+                return {photos:getphotos(data.data.response.venues),data:data,ratings:getratings(data.data.response.venues)};
 
             ;}).then(function(data){
                 
                 $q.all(data.photos)
                     .then(function (responsesArray) {
-                        console.log('list of promisi2222',data);
                           $scope.images = [];
 
                         for (var i = 0; i < responsesArray.length; i++) {
+                           // console.log('responsesArray',responsesArray[i]);
                             var image_url = responsesArray[i].data.response.photos.items[0];
-                            // console.log('data.data',data.data.data.response);
+                            // console.log('restaurent',data.data.data.response);
                             var name = data.data.data.response.venues[i].name;
                             var link = data.data.data.response.venues[i].url;
                             var address = data.data.data.response.venues[i].location.address;
+                            var id = data.data.data.response.venues[i].id;
+                            // console.log('id',id);
 
                             try {
-                                var img = { url: image_url.prefix + imgsize + image_url.suffix, name: name, address: address, link: link };
-                                img['address'] = address;
-                                img['name'] = name;
+                                
+
+                                var myrating = undefined;
+
+                                restaurant_ref.orderByChild("id").equalTo(id).on("child_added", function (snapshot) {
+                                    myrating = snapshot.val().myrating;
+                                    console.log('id', id, myrating);
+                                });
+                                   
+                   var img = { url: image_url.prefix + imgsize + image_url.suffix, name: name, address: address, link: link, id:id,myrating:myrating,rating:'No rating available'};
+
+                                // console.log('img',img);
                                 $scope.images.push(img);
                             }
                             catch (err) {
@@ -133,51 +150,95 @@ function AddEventController($scope, CheckValuesService, FourSquareService,$q,$lo
 
                         }
 
-                       console.log('ende image loop');
+                    //    console.log('ende image loop');
                        $scope.foursquarestate.show = true;
                        $scope.foursquarestate.visible = true;//hide button
-                       $scope.apply;
-                        
+                       $scope.apply;                                                                                 
                     });   
+                    
+                    
+                    //datings
+                    
+                $q.all(data.ratings)
+                    .then(function (responsesArray) {
+                        for (var i = 0; i < responsesArray.length; i++) {
+                            var rating = responsesArray[i].data.response.venue.rating;
+                            if (rating != undefined){
+                                $scope.images[i].rating = responsesArray[i].data.response.venue.rating;
+                            }
+                            console.log('image with rating',$scope.images[i]);
+                            // console.log('rating?', responsesArray[i].data.response.venue.rating);
+                        }
+                    });            
+                        
             });
-               
+    }
+    
+    $scope.foursquare = getfoursquare;
+    
+    getfoursquare("sushi","Vienna,AT");
+    
+
+    $scope.updatescope = function () {
+        $scope.apply;
+        $scope.digest;
+
+        for (var i = 0; i < $scope.images.length; i++) {
+            console.log('img', i, $scope.images[i]);
+        }
     }
     
 
-        $scope.addEvent = function (event) {
+    $scope.$watch('images', function () {
+        //alert('hey, myVar has changed!');   
+                               $scope.apply;     
+        // for (var i = 0; i < $scope.images.length; i++) {
+        //     console.log('img',i,$scope.images[i]);
+        //     restaurant_ref.orderByChild("id").equalTo($scope.images[i].id).on("child_added", function (snapshot) {
+        //         //console.log('Test EqualTo', snapshot.key(), 'user', snapshot.val().user);
+        //         if (snapshot.val().myrating != undefined){
+        //             // $scope.images[i].myrating =  snapshot.val().myrating;
+        //                              console.log('myrating',snapshot.val().myrating);
+        //         }
+                
 
-            console.log('adding event');
+        //          console.log('img',i,$scope.images[i]);
 
-        if (event.title != undefined && event.type != undefined && event.host != undefined
-        && event.location != undefined) {
+        //     });
 
-            console.log("adding event");
-
-            event['startdate'] = $scope.startdate.toString();;
-            event['enddate'] = $scope.enddate.toString();
-
-            if ($scope.username == null) $scope.username = 'unknown';
-
-            event['user'] = $scope.username;
-            // event['guestlist'] = $scope.guestlist;
-
-            // event['location'] = event.location;
+        // }
+    });
 
 
 
-            // console.log('check event',event);
+             
 
-            ref.child("events").push(event);
-            
-            event.guestlist = [];
-            //$scope.$apply(function() {
-            $location.path('/home');
-            //});
-        }
 
-    };
-    
-    
+
+
+
+
+
+    $scope.rate = 7;
+    $scope.max = 10;
+    $scope.isReadonly = false;
+
+  $scope.hoveringOver = function(value) {
+    $scope.overStar = value;
+    $scope.percent = 100 * (value / $scope.max);
+  };
+
+  $scope.ratingStates = [
+    {stateOn: 'glyphicon-ok-sign', stateOff: 'glyphicon-ok-circle'},
+    {stateOn: 'glyphicon-star', stateOff: 'glyphicon-star-empty'},
+    {stateOn: 'glyphicon-heart', stateOff: 'glyphicon-ban-circle'},
+    {stateOn: 'glyphicon-heart'},
+    {stateOff: 'glyphicon-off'}
+  ]; 
+
+
+
+
 
     
     //Check Date functions
