@@ -23,14 +23,7 @@ function AuthentificationService($location) {
             }
         });
     };
-    
-    
-    
-    
-    
-    
-    
-    
+
      this.createnewuser = function (user) {
 
         user_ref.createUser({

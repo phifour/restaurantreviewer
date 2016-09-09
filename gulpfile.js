@@ -43,16 +43,38 @@ gulp.task('clean', function (done) {
     require('del')(['public'], done);
 });
 
+// gulp.task('browser-sync', function () {
+//     browserSync({
+//         notify: true,//shows browser sync flag
+//         port: 8000,
+//         open: false,
+//         server: {
+//             baseDir: "public",
+            
+//         }
+//     });
+// });
+
+
 gulp.task('browser-sync', function () {
-    browserSync({
-        notify: true,//shows browser sync flag
-        port: 8000,
-        open: false,
-        server: {
-            baseDir: "public"
-        }
-    });
+  browserSync({
+    notify: true,
+    port: 8000,
+    server: {
+      baseDir: "public",
+      middleware: function (req, res, next) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+
+        next();
+      }
+    }
+  });
 });
+
+
+
 
 
 var exclude = path.normalize('!**/{' + config.tasks.html.excludeFolders.join(',') + '}/**')
@@ -100,7 +122,6 @@ gulp.task('html',  function () {
             }
         }))
         .on('error', handleErrors)
-    // .pipe(gulpif(global.production, htmlmin(config.tasks.html.htmlmin)))
         .pipe(gulp.dest(paths.dest))
         .pipe(browserSync.stream())
 
@@ -122,8 +143,8 @@ gulp.task('css', function () {
 gulp.task('js', function () {
     gulp.src(['./src/javascripts/**'])
         .pipe(concat('app.js'))
-        .pipe(stripcomments())
-        .pipe(uglifyify())
+        // .pipe(stripcomments())
+        // .pipe(uglifyify())
         .pipe(gulp.dest('./public/javascripts/'))
 });
 
@@ -160,16 +181,17 @@ var bundlers = {
         './src/javascripts/app.js',
         './src/javascripts/controller/addevent.controller.js',
         './src/javascripts/controller/datepicker.controller.js',
-        './src/javascripts/controller/event.controller.js',
         './src/javascripts/controller/main.controllerl.js',
         './src/javascripts/controller/password.controller.js',
+        './src/javascripts/controller/rating.controller.js',
         './src/javascripts/controller/timepicker.controller.js',
         './src/javascripts/factory/access.factory.js',
         './src/javascripts/factory/references.factory.js',
         './src/javascripts/route/main.route.js',
         './src/javascripts/service/authentification.service.js',
         './src/javascripts/service/checkvalues.service.js',
-        './src/javascripts/service/foursquare.service.js'
+        './src/javascripts/service/foursquare.service.js',
+        './src/javascripts/filter/test.filter.js'     
         ]),
 };
 

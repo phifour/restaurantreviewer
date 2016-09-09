@@ -4,61 +4,120 @@
     <center>
         <h2>Restaurants</h2></center>
 
-    <input type="checkbox" checked data-toggle="toggle" ng-model="showres" ng-init="showres = true" data-size="normal">
-
-
     <form role="form">
-        <legend>Add your event</legend>
         <div class="form-group">
-
             <div class="form-group">
-                <label for="foursquare-keyword">Keyword</label>
-                <input name="foursquare-keyword" class="form-control" placeholder="e.g. sushi, donuts" ng-model="foursquarekeyword" autocomplete="foursquare-keyword">
+                <label for="restauranttype">Restaurant Type</label>
+                <select aria-label="Search by type" ng-model="restauranttype" class="form-control" ng-options="x for x in restauranttypes"></select>
                 <br>
                 <label for="foursquare-city">City</label>
-                <select ng-model="fourquarecity" class="form-control" ng-options="x for x in foursquarecities" ng-init="fourquarecity = 'Vienna,AT'"></select>
-                <br>
-                <button type="submit" class="btn btn-primary btn-block" ng-click="foursquare(foursquarekeyword,fourquarecity)">Get FourSquare Recommendations</button>
-                <br>
+                <select aria-label="Search by city" ng-model="foursquarecity" class="form-control" ng-options="x for x in foursquarecities"></select>
             </div>
-
     </form>
 
 
-    <!--<button type="submit" class="btn btn-primary btn-block" ng-click="rateObject(img['id'])">Test</button>
-<button type="submit" class="btn btn-primary btn-block" ng-click="getRating(img['id'])">Get Rating</button>
-<uib-rating ng-model="img.myrating" max="max" read-only="isReadonly" on-hover="hoveringOver(value)" on-leave="overStar = null"
-titles="['one','two','three']" aria-labelledby="default-rating"></uib-rating>-->
 
     {% raw %}
     <div class="container">
-        <h2>Hover Rows</h2>
-        <p>The .table-hover class enables a hover state on table rows:</p>
+        <h2>Restaurant</h2>
+
+
+
+
+        <!--<div ng-repeat="restaurant in restaurants" ng-if="$index % 3 == 0" class="row">
+    <div class="col-xs-4">{{restaurants[$index].name}}
+        <a href="{restaurants[$index].link}}">
+            <img src="{{restaurants[$index].url}}" alt="{{restaurants[$index].name}}">
+        </a>
+    </div>
+    <div class="col-xs-4">{{restaurants[$index + 1].name}}
+               <a href="{restaurants[$index].link}}">
+            <img src="{{restaurants[$index].url}}" alt="{{restaurants[$index].name}}">
+        </a>
+    </div>
+    <div class="col-xs-4">{{restaurants[$index + 2].name}}</div>
+</div>-->
+            <!--<div ng-repeat="restaurant in restaurants| startsWithA:criteriaprice" class="col-xs-4">-->
+
+        <div class="row">
+            <div ng-repeat="restaurant in restaurants| filter: filterRestaurants as filtered" class="col-xs-4">
+
+                <a href="{restaurant.link}}">
+                    <h3>{{restaurant['name']}}</h3>
+                    <img src="{{restaurant.url}}" alt="{{restaurant.name}}">
+                </a>
+
+                <div>
+                    <span class="glyphicon glyphicon-thumbs-up"></span>
+                    <!--<a href="#/showratings/{{restaurant.id}}">Show Ratings</a>-->
+                    <a href="#/showratings/{{restaurant.id}}" class="btn btn-default">Show Ratings</a>
+                </div>
+
+                <div>
+                    <a href="#/raterestaurant/{{restaurant.id}}" class="btn btn-default" ng-disabled="notloggedin(username)">Rate {{restaurant.name}} </a>
+                    <h5>{{showRating(restaurat_ratings[restaurant.id].rating,restaurat_ratings[restaurant.id].nratings)}}</h5>
+                </div>
+
+                <div>
+                    <span class="glyphicon glyphicon-home"></span>
+                    <strong> {{restaurant.address}}</strong>
+                </div>
+
+                <div>
+                    <span class="glyphicon glyphicon-euro">Price</span>
+                    <strong> {{restaurant.price}}</strong>
+                </div>
+
+
+                <h5>{{restaurant.rating}}</h5>
+
+                <div>
+                    <span class="glyphicon glyphicon-phone" aria-hidden="true"></span>
+                    <span class="sr-only">Phone:</span> 23323323
+                </div>
+
+            </div>
+        </div>
+
+
+
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th></th>
-                    <th>Adress</th>
-                    <th>Rating on Foursquare</th>
-                    <th>Your Rating</th>
+                    <th><a href="" ng-click="orderByField='name'; reverseSort = !reverseSort">Restaurant</a></th>
+                    <!--<th><a href="" ng-click="orderByField='address'; reverseSort = !reverseSort">Adress</a></th>-->
+                    <!--<th><a href="" ng-click="orderByField='rating'; reverseSort = !reverseSort">Rating on Foursquare</a></th>
+                    <th><a href="" ng-click="orderByField='rating'; reverseSort = !reverseSort">Rating on Rate my Restaurant</a></th>-->
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="img in images|filter:search.name">
+                <tr ng-repeat="restaurant in restaurants|filter:search.name| orderBy:orderByField:reverseSort">
                     <td>
-                        <a href="{{img.link}}">
-                            <h4>{{img['name']}}</h4>
-                            <img src="{{img.url}}" alt="{{img.name}}">
+                        <a href="{{restaurant.link}}">
+                            <h4>{{restaurant['name']}}</h4>
+                            <img src="{{restaurant.url}}" alt="{{restaurant.name}}">
                         </a>
-                    </td>
-                    <td>
-                        <h5>{{img['address']}}</h5></td>
-                    <td>
-                        <h5>{{img['rating']}}</h5></td>
-                    <td>
-                        <uib-rating ng-model="img.myrating" max="max" read-only="isReadonly" on-hover="hoveringOver(value)" on-leave="overStar = null"
-                        titles="['one','two','three']" aria-labelledby="default-rating"></uib-rating>
-                        <button type="submit" class="btn btn-primary btn-block" ng-click="submitRating(img)">Submit Rating</button>
+                        <br>
+                        <h5>{{restaurant['address']}}</h5>
+                        <h5>{{restaurant['rating']}}</h5>
+
+
+
+
+
+                        <div>
+                            <span class="glyphicon glyphicon-thumbs-up"></span>
+                            <a href="#/showratings/{{restaurant.id}}">Show Ratings</a>
+                        </div>
+
+                        <div>
+                            <span class="glyphicon glyphicon-home"></span>
+                            <strong> {{restaurant.address}}</strong>
+                        </div>
+                        <div>
+                            <span class="glyphicon glyphicon-phone" aria-hidden="true"></span>
+                            <span class="sr-only">Phone:</span> 23323323
+                        </div>
                     </td>
                 </tr>
             </tbody>
@@ -66,26 +125,4 @@ titles="['one','two','three']" aria-labelledby="default-rating"></uib-rating>-->
     </div>
     {% endraw %}
 
-
-
-    <div id="barchart"></div>
-
-
-    <div ng-controller='ChartCtrl'>
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h3 class="panel-title">Add Data to PieChart</h3>
-            </div>
-            <div class="panel-body">
-                <form novalidate class="simple-form">
-                    <button type="submit" class="btn btn-primary" ng-click="changefunction()">Change</button>
-                    <button type="submit" class="btn btn-primary" ng-click="add()">Do Something</button>
-                    <button type="submit" class="btn btn-primary" ng-click="doticks()">Add Ticks</button>
-                    <button type="submit" class="btn btn-primary" ng-click="changescale()">Change Scale</button>
-                </form>
-            </div>
-        </div>
-        <barchart></barchart>
     </div>
-
-</div>

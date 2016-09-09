@@ -11,10 +11,10 @@ var margin = {
         bottom: 30,
         left: 50
     },
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    width = 480 - margin.left - margin.right,
+    height = 250 - margin.top - margin.bottom;
   
-var svg = d3.select("body").append("svg")
+var svg = d3.select("#barchart").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
@@ -22,13 +22,8 @@ var svg = d3.select("body").append("svg")
 
 update();	
 		
-function update() {//data missing
+function update() {
 
-//console.log("updating piechart!",data);
-
-//svg.selectAll("*").remove();
-
-// Parse the date / time
 svg.selectAll("*").remove();
 
 var data = [];
@@ -86,17 +81,17 @@ for (var i = 0; i < 100000; i++) {
     q = normal() // calc random draw from normal dist
     p = gaussian(q) // calc prob of rand draw
     el = {
-        "q": q,
-        "p": p
+        "q": i,//q,
+        "p": i//p
     }
     data.push(el)
 };
 
 // need to sort for plotting
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
-data.sort(function(x, y) {
-    return x.q - y.q;
-});	
+// data.sort(function(x, y) {
+//     return x.q - y.q;
+// });	
 }
 
 // from http://bl.ocks.org/mbostock/4349187
@@ -127,7 +122,7 @@ function gaussian(x) {
 };
 
   
-  };//end update
+};//end update
   
   
   
@@ -150,7 +145,7 @@ $scope.$watch('scale',function(newValue, oldValue) {
 		update($scope.barchartdata);};
 });
 
-$scope.$watch('myfunction',function(newValue, oldValue) {
+$scope.$watch('selfunction',function(newValue, oldValue) {
 		if (newValue != oldValue){
         console.log("Event!!! function");
 		update();};
@@ -160,7 +155,7 @@ $scope.$watch('myfunction',function(newValue, oldValue) {
 };
 			
   return {
-      template: '<div class="chart col-sm-12 col-md-12 col-lg-12 col-xl-12"></div>',
+      template: '<div></div>',
       replace: true,
       link: link, 
       restrict: 'AE' 

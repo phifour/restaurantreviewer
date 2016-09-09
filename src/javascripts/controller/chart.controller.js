@@ -24,7 +24,8 @@ function ChartCtrl($scope) {
 		};	
 	   
         $scope.changefunction = function() {	
-			$scope.myfunction = Math.abs;
+			$scope.selfunction = Math.abs;
+            console.log('changing function',$scope.selfunction);
 		};	
 
 			

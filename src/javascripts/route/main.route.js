@@ -9,17 +9,7 @@ function mainroute($routeProvider) {
 
         .when('/home', {
             templateUrl: "layouts/home.html",
-            controller: 'MainController',
-            resolve: {
-                "check": ['accessFac', '$location', function (accessFac, $location) {
-                    if (accessFac.checkPermission()) {    //check if the user has permission -- This happens before the page loads
-                        console.log("rooting to home");
-                    } else {
-                        $location.path('/login');                //redirect user to home if it does not have permission.
-                        alert("You don't have access here");
-                    }
-                }]
-            }
+            controller: 'MainController'
         })
 
         .when('/register', {
@@ -27,17 +17,27 @@ function mainroute($routeProvider) {
             controller: 'MainController'
         })
 
-        .when('/addevent', {
-            templateUrl: "layouts/addevent.html",
+        .when('/raterestaurant/:ID', {
+            templateUrl: "layouts/raterestaurant.html",
+            controller: 'MainController',
+            resolve: {
+                "check": ['accessFac', '$location', function (accessFac, $location) {
+                    if (accessFac.checkPermission()) {    //check if the user has permission -- This happens before the page loads
+                        console.log("rooting to home");
+                    } else {
+                        $location.path('/home');                //redirect user to home if it does not have permission.
+                        alert("You don't have access here");
+                    }
+                }]
+            }
+        })
+        
+      .when('/showratings/:ID', {
+            templateUrl: "layouts/showratings.html",
             controller: 'MainController'
         })
-
-        .when('/eventdetails/:eventID', {
-            templateUrl: 'layouts/eventdetails.html',
-            controller: 'MainController'
-        })
-
+        
         .otherwise({
-            redirectTo: '/login'
+            redirectTo: '/home'
         });
 };

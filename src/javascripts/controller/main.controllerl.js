@@ -1,10 +1,11 @@
 
 app.controller('MainController', ['$scope', '$rootScope', '$firebaseArray',
- '$routeParams', 'accessFac', '$location', '$http',
-  '$q', 'FourSquareService','CheckValuesService','AuthentificationService','refFac', MainController]);
+    '$routeParams', 'accessFac', '$location', '$http',
+    '$q', 'FourSquareService', 'CheckValuesService', 'AuthentificationService', 'refFac', MainController]);
 
 function MainController($scope, $rootScope, $firebaseArray, $routeParams,
- accessFac, $location, $http, $q, FourSquareService,CheckValuesService,AuthentificationService,refFac) {
+    accessFac, $location, $http, $q, FourSquareService, CheckValuesService, AuthentificationService, refFac) {
+
 
     $scope.parseDate = function (x) {
         if (x != null) {
@@ -21,18 +22,25 @@ function MainController($scope, $rootScope, $firebaseArray, $routeParams,
         accessFac.getPermission();       //call the method in acccessFac to allow the user permission.
     }
 
-
-    // $scope.getproperty = function (obj, pro) {
-    //     return 'irgendwas';
-    // }
-
-    // $scope.selectedlocation = undefined;
+    $scope.getloggedinstate = function(x){
+        if (x==undefined){
+            return 'You are not logged in';
+        }else{
+            return 'logged in as' + x;
+        }
+    }
 
     $scope.username = accessFac.getuser();
 
     $scope.params = $routeParams;
 
     $scope.authData = undefined;
+
+    $scope.criteriatype = "All types";
+    $scope.criteriaprice = "All prices";
+    $scope.criteriarating = "All ratings";
+            
+    $rootScope.restaurants = [];
 
     // Create our Firebase reference
     var ref = new Firebase("https://flickering-inferno-6917.firebaseio.com");
@@ -97,6 +105,74 @@ function MainController($scope, $rootScope, $firebaseArray, $routeParams,
 
     // };
 
+
+    // var foursquarefcnt = FourSquareService.getvenues;
+        
+    // function getfoursquare(foursquarekeyword,fourquarecity){
+    //     // $scope.foursquarestate.visible = true;
+    //     foursquarefcnt(foursquarekeyword,fourquarecity)
+    //     .then(function (data, status, headers, config) {  
+    //             // console.log("data.respons", data.data.response.venues);
+    //             var getphotos = FourSquareService.getphotos;
+    //             var getratings = FourSquareService.getratings;
+    //             return {photos:getphotos(data.data.response.venues),data:data,ratings:getratings(data.data.response.venues)};
+
+    //         ;}).then(function(data){
+                                                
+    //             $q.all(data.photos)
+    //                 .then(function (responsesArray) {
+    //                       $scope.restaurants = [];
+
+    //                     for (var i = 0; i < responsesArray.length; i++) {
+    //                        //console.log('responsesArray',responsesArray[i]);                                                      
+    //                         var image_url = responsesArray[i].data.response.photos.items[0];
+    //                         // console.log('restaurent',data.data.data.response);
+    //                         var name = data.data.data.response.venues[i].name;
+    //                         var link = data.data.data.response.venues[i].url;
+    //                         var address = data.data.data.response.venues[i].location.address;
+    //                         var id = data.data.data.response.venues[i].id;
+    //                         // console.log('id',id);
+    //                         try {
+                                
+    //                             var myrating = undefined;
+    
+    //                             var img = { url: image_url.prefix + imgsize + image_url.suffix, name: name,
+    //                             address: address, link: link, id:id,
+    //                             myrating:myrating,rating:'No rating available'};
+
+    //                             $scope.restaurants.push(img);
+    //                             $scope.restaurant_by_id[id] = img;
+    //                         }
+    //                         catch (err) {
+    //                             console.log(name,err.message);
+    //                         }
+
+    //                     }
+
+    //                    $scope.apply;                                                                                 
+    //                 }); 
+                    
+                    
+    //                 $q.all(data.ratings)
+    //                 .then(function (responsesArray) {
+    //                     for (var i = 0; i < responsesArray.length; i++) {
+    //                       console.log('responsesArrayxxx',responsesArray[i].data.response.venue);
+    //                       //console.log('responsesArrayxxx / rating',responsesArray[i].data.response.venue.rating);
+    //                       $scope.restaurants[i].rating = responsesArray[i].data.response.venue.rating;
+    //                       if (responsesArray[i].data.response.venue.attributes.groups[0].summary==undefined){
+    //                            $scope.restaurants[i]['price'] = 'N.A.';
+    //                       }else{
+    //                            $scope.restaurants[i]['price'] = responsesArray[i].data.response.venue.attributes.groups[0].summary;
+    //                       }                                                   
+    //                     }
+    //                 }); 
+                                                                                                             
+    //         });
+            
+          
+    // }
+
+
     $scope.logout = function () {
         ref.unauth();
         $location.path('/login');
@@ -116,22 +192,7 @@ function MainController($scope, $rootScope, $firebaseArray, $routeParams,
         }
     };
 
-    // $scope.editEvent = function (item) {
-
-    //     item.title = item.title + "edited" + item.mytext;
-
-    //     delete item.mytext;
-
-    //     item['editmode'] = true;
-
-    //     $scope.events.$save(item).then(function (ref) {
-    //         ref.key() === item.$id; // true
-    //     });
-
-
-    // };
-
-     $scope.loginwithpassword =  function (user) {
+    $scope.loginwithpassword = function (user) {
         ref.authWithPassword({
             "email": user.email,
             "password": user.password
@@ -149,12 +210,44 @@ function MainController($scope, $rootScope, $firebaseArray, $routeParams,
         });
     };
 
-    $scope.events = $firebaseArray(ref.child("events"));
 
-    // $scope.showuser = function () {
-    //     console.log("adding event", $scope.useremail, $scope.authData, $scope.user);
-    //     console.log("user", accessFac.getuser());
-    // };
+
+    $scope.$watch('criteriaprice',
+        function (newValue, oldValue) {
+            console.log('criteriaprice', $scope.criteriaprice);
+        }
+        );
+
+
+
+    $scope.filterRestaurants = function(element) {
+
+        // if ($scope.criteriatype !== 'All types')
+        // {
+        //     if (!element.type.includes($scope.criteriatype))
+        //         return false;
+        // }
+        if ($scope.criteriaprice != 'All prices')
+        {
+            if (element.price != $scope.criteriaprice)
+                return false;
+        }
+        // if ($scope.criteriarating != 'All ratings')
+        // {
+        //     if (element.rating != $scope.criteriarating)
+        //         return false;
+        // }
+        return true;
+
+    };
+
+
+
+
+
+
+
+
 
 
 
