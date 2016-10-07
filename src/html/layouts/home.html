@@ -1,128 +1,194 @@
 {% include "shared/header.html" %}
-
 <div class="container" ng-controller="AddEventController">
     <center>
         <h2>Restaurants</h2></center>
 
-    <form role="form">
-        <div class="form-group">
-            <div class="form-group">
-                <label for="restauranttype">Restaurant Type</label>
-                <select aria-label="Search by type" ng-model="restauranttype" class="form-control" ng-options="x for x in restauranttypes"></select>
-                <br>
-                <label for="foursquare-city">City</label>
-                <select aria-label="Search by city" ng-model="foursquarecity" class="form-control" ng-options="x for x in foursquarecities"></select>
-            </div>
-    </form>
-
-
-
     {% raw %}
-    <div class="container">
-        <h2>Restaurant</h2>
 
-
-
-
-        <!--<div ng-repeat="restaurant in restaurants" ng-if="$index % 3 == 0" class="row">
-    <div class="col-xs-4">{{restaurants[$index].name}}
-        <a href="{restaurants[$index].link}}">
-            <img src="{{restaurants[$index].url}}" alt="{{restaurants[$index].name}}">
-        </a>
-    </div>
-    <div class="col-xs-4">{{restaurants[$index + 1].name}}
-               <a href="{restaurants[$index].link}}">
-            <img src="{{restaurants[$index].url}}" alt="{{restaurants[$index].name}}">
-        </a>
-    </div>
-    <div class="col-xs-4">{{restaurants[$index + 2].name}}</div>
-</div>-->
-            <!--<div ng-repeat="restaurant in restaurants| startsWithA:criteriaprice" class="col-xs-4">-->
-
-        <div class="row">
-            <div ng-repeat="restaurant in restaurants| filter: filterRestaurants as filtered" class="col-xs-4">
-
-                <a href="{restaurant.link}}">
-                    <h3>{{restaurant['name']}}</h3>
-                    <img src="{{restaurant.url}}" alt="{{restaurant.name}}">
-                </a>
-
-                <div>
-                    <span class="glyphicon glyphicon-thumbs-up"></span>
-                    <!--<a href="#/showratings/{{restaurant.id}}">Show Ratings</a>-->
-                    <a href="#/showratings/{{restaurant.id}}" class="btn btn-default">Show Ratings</a>
-                </div>
-
-                <div>
-                    <a href="#/raterestaurant/{{restaurant.id}}" class="btn btn-default" ng-disabled="notloggedin(username)">Rate {{restaurant.name}} </a>
-                    <h5>{{showRating(restaurat_ratings[restaurant.id].rating,restaurat_ratings[restaurant.id].nratings)}}</h5>
-                </div>
-
-                <div>
-                    <span class="glyphicon glyphicon-home"></span>
-                    <strong> {{restaurant.address}}</strong>
-                </div>
-
-                <div>
-                    <span class="glyphicon glyphicon-euro">Price</span>
-                    <strong> {{restaurant.price}}</strong>
-                </div>
-
-
-                <h5>{{restaurant.rating}}</h5>
-
-                <div>
-                    <span class="glyphicon glyphicon-phone" aria-hidden="true"></span>
-                    <span class="sr-only">Phone:</span> 23323323
-                </div>
-
-            </div>
+        <div class="form-group">
+            <label for="frmtype">Type</label>
+            <select aria-label="Search by type" class="form-control" ng-model="criteriatype" ng-change="typeChanged()" id="frmtype">
+                <option>All types</option>
+                <option>asian</option>
+                <option>italian</option>
+                <option>burger</option>
+                <option>sushi</option>
+            </select>
+            <label for="frmprice">Price</label>
+            <select aria-label="Search by price" class="form-control" ng-model="criteriaprice" ng-change="priceChanged()" id="frmprice">
+                <option>All prices</option>
+                <option>€</option>
+                <option>€€</option>
+                <option>€€€</option>
+            </select>
+            <label for="frmrating">Rating</label>
+            <select aria-label="Search by Rating" class="form-control" ng-model="criteriarating" ng-change="ratingChanged()" id="frmrating">
+                <option>All ratings</option>
+                <option>1 Star</option>
+                <option>2 Star</option>
+                <option>3 Star</option>
+                <option>4 Star</option>
+                <option>5 Star</option>
+            </select>
         </div>
 
 
+    <div ng-repeat="restaurant in restaurants| filter: filterRestaurants as filtered" class="col-xs-6">
+        <div class="well">
 
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th><a href="" ng-click="orderByField='name'; reverseSort = !reverseSort">Restaurant</a></th>
-                    <!--<th><a href="" ng-click="orderByField='address'; reverseSort = !reverseSort">Adress</a></th>-->
-                    <!--<th><a href="" ng-click="orderByField='rating'; reverseSort = !reverseSort">Rating on Foursquare</a></th>
-                    <th><a href="" ng-click="orderByField='rating'; reverseSort = !reverseSort">Rating on Rate my Restaurant</a></th>-->
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="restaurant in restaurants|filter:search.name| orderBy:orderByField:reverseSort">
-                    <td>
-                        <a href="{{restaurant.link}}">
-                            <h4>{{restaurant['name']}}</h4>
-                            <img src="{{restaurant.url}}" alt="{{restaurant.name}}">
-                        </a>
-                        <br>
-                        <h5>{{restaurant['address']}}</h5>
-                        <h5>{{restaurant['rating']}}</h5>
+            <div class="clearfix">
+                <img src="{{restaurant.url}}" alt="{{restaurant.name}}" class="pull-left abstand-rechts">
+                <a href="{restaurant.link}}">
+                    <h3>{{restaurant['name']}}</h3></a>
+            </div>
 
 
+            <table class="table table-condensed">
+                <tbody>
+                                                            
+                     <tr>
+                        <td>Restaurant type</td>
+                        <td><strong>{{restaurant.type}}</strong></td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Rating</td>
+                        <td>
+                        <uib-rating ng-model="restaurat_ratings[restaurant.id].rating" max="max" read-only="true" on-hover="hoveringOver(value)" on-leave="overStar = null" titles="['one','two','three']" tabindex="-1"></uib-rating>
+                        {{restaurat_ratings[restaurant.id].nratings}}                                                 
+                        </td>
+                    </tr>
+                    
+                    <!--<tr>
+                        <td><strong>Rating on Foursquare</strong></td>
+                        <td><strong>{{restaurant.rating}}</strong></td>
+                    </tr>-->
+
+                    <tr>
+                        <td><span class="glyphicon glyphicon-home"></span></td>
+                        <td><strong> {{restaurant.address}}</strong></td>
+                    </tr>
+
+                    <tr>
+                        <td><span class="glyphicon glyphicon-euro">Price</span></td>
+                        <td> <strong> {{restaurant.price}}</strong></td>
+                    </tr>
+
+                    <tr>
+                      <td><span class="glyphicon glyphicon-euro">Open</span></td>
+                       <td>                     
+                           <small>
+                                Monday: {{restaurant.hours.Mon}}.
+                                <br>Tuesday: {{restaurant.hours.Tue}}.
+                                <br>Wednesday: {{restaurant.hours.Wed}}.
+                                <br>Thursday: {{restaurant.hours.Thu}}.
+                                <br>Friday: {{restaurant.hours.Fri}}.
+                                <br>Saturday: {{restaurant.hours.Sat}}.
+                                <br>Sunday: {{restaurant.hours.Son}}.
+                            </small>
+                       </td>                     
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+            <table class="table table-condensed">
+                <tbody>
+                    <tr>
+                        <td>
+                            <button type="button" aria-label="Show Ratings" class="btn btn-primary btn-block" ng-click="restaurant.showres=!restaurant.showres" ng-init="restaurant.showres = false">{{booleanswither(restaurant.showres,'Show Ratings','Hide Ratings')}}</button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <div class="row" ng-show="restaurant.showres">
+                                <div ng-repeat="x in refratings.$getRecord(restaurant.id)">
+                                    <div class="well" tabindex="0">
+                                        <uib-rating ng-model="x.myrating" max="max" read-only="true" on-hover="hoveringOver(value)" on-leave="overStar = null" titles="['one','two','three']" tabindex="-1"></uib-rating>                                                                              
+                                        <p>{{x.user}}, {{showDate(x.date)}}</p>
+                                        <p><strong>Review: </strong>{{x.review}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <!--<button type="button" class="btn btn-primary btn-block" ng-disabled="notloggedin(username)" ng-click="restaurant.rateres=!restaurant.rateres"
+                            ng-init="restaurant.rateres = false">{{swither(username,'Rate Restaurant','Login to rate Restaurant')}}</button>-->
+                            <button type="button" class="btn btn-primary btn-block" ng-click="restaurant.rateres=!restaurant.rateres"
+                            ng-init="restaurant.rateres = false" aria-label="Rate Restaurant">Rate Restaurant</button>                                                        
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td>
+                            <!--<div class="alert alert-warning">
+                                <h5>{{restaurat_ratings[restaurant.id].rated_by_user}}</h5>
+                                <strong>You have already rated {{restaurant.name}}</strong>
+                            </div>-->
+                            <div ng-show="restaurant.rateres">
+                            <label for="frmName" ng-show="restaurant.rateres">Name</label>
+                            <input class="form-control" ng-show="restaurant.rateres" id="frmName" ng-model="restaurant.reviewer" placeholder="Your Name" aria-label="Name">                                                       
+                            <!--<uib-rating ng-show="restaurant.rateres" ng-model="restaurant.myrating" max="max" read-only="isReadonly" on-hover="hoveringOver(value)"
+                            on-leave="overStar = null" titles="['one','two','three']" aria-label="rating">
+                            </uib-rating>-->
+                            
+                                 
+                            <fieldset  ng-show="restaurant.rateres">
+                            <legend>Your rating</legend>
+                            <uib-rating  ng-model="starrating.onestar" max="max" read-only="true" tabindex="-1"></uib-rating>
+                            <input id="overnight" type="radio" ng-model="restaurant.myrating" value="1">
+                            <label for="overnight">1 Star</label><br>
+                            <uib-rating ng-model="starrating.twostar" max="max" read-only="true" tabindex="-1"></uib-rating>
+                            <input id="twoday" type="radio" ng-model="restaurant.myrating" value="2">
+                            <label for="twoday">2 Star</label><br>
+                            <uib-rating ng-model="starrating.threestar" max="max" read-only="true" tabindex="-1"></uib-rating>
+                            <input id="ground" type="radio" ng-model="restaurant.myrating" value="3">
+                            <label for="ground">3 Star</label><br>
+                            <uib-rating ng-model="starrating.fourstar" max="max" read-only="true" tabindex="-1"></uib-rating>
+                            <input id="ground" type="radio" ng-model="restaurant.myrating" value="4">
+                            <label for="ground">4 Star</label><br>
+                            <uib-rating ng-model="starrating.fivestar" max="max" read-only="true" tabindex="-1"></uib-rating>
+                            <input id="ground" type="radio" ng-model="restaurant.myrating" value="5">
+                            <label for="ground">5 Star</label><br>
+                            </fieldset>
+         
+
+                
+                            <textarea ng-show="restaurant.rateres" class="form-control" rows="5" ng-model="restaurant.review" aria-label="review"> </textarea>
+                             
+                            <div class="alert alert-warning" ng-show="stringmissing(restaurant.myrating)">
+                                Your <strong>rating</strong> is missing.
+                            </div>
+                                                          
+                             <div class="alert alert-warning" ng-show="stringmissing(restaurant.reviewer)">
+                                Your <strong>name</strong> is missing.
+                            </div>
+                             <div class="alert alert-warning" ng-show="stringmissing(restaurant.review)">
+                                Your <strong>review</strong> is missing.
+                            </div>
+                            </div>
+                            
+                            <button type="submit" ng-disabled="stringmissing(restaurant.review)==stringmissing(restaurant.reviewer)==stringmissing(restaurant.myrating)!=false" ng-show="restaurant.rateres" class="btn btn-primary btn-block" ng-click="restaurant.rateres=false;submitRating(restaurant.reviewer,restaurant.myrating,restaurant.review,restaurant)">Submit Rating</button>
+                        </td>
+                    </tr>
+                </tbody>
+
+            </table>
 
 
 
-                        <div>
-                            <span class="glyphicon glyphicon-thumbs-up"></span>
-                            <a href="#/showratings/{{restaurant.id}}">Show Ratings</a>
-                        </div>
 
-                        <div>
-                            <span class="glyphicon glyphicon-home"></span>
-                            <strong> {{restaurant.address}}</strong>
-                        </div>
-                        <div>
-                            <span class="glyphicon glyphicon-phone" aria-hidden="true"></span>
-                            <span class="sr-only">Phone:</span> 23323323
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        </div>
     </div>
+
+
+
     {% endraw %}
 
-    </div>
+</div>

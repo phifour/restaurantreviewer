@@ -1,17 +1,17 @@
-app.controller('PasswordController', ['$scope', 'CheckValuesService', 'refFac', PasswordController]);
+app.controller('PasswordController', ['$scope', 'CheckValuesService', 'refFac','$location','accessFac', PasswordController]);
 
+function PasswordController($scope, CheckValuesService, refFac, $location,accessFac) {
 
-function PasswordController($scope, CheckValuesService, refFac) {
+    var user_ref = refFac.user_ref();
 
-    var user_ref = refFac.ref();
-
+    $('#inputName').focus();
 
     //Password Checks
     $scope.stringmissing = CheckValuesService.stringmissing;
 
-    $scope.toshort = CheckValuesService.toshort;
+    $scope.tooshort = CheckValuesService.tooshort;
 
-    $scope.tolong = CheckValuesService.tolong;
+    $scope.toolong = CheckValuesService.toolong;
 
     $scope.missingnumber = CheckValuesService.missingnumber;
 
@@ -22,14 +22,32 @@ function PasswordController($scope, CheckValuesService, refFac) {
     $scope.illegalchar = CheckValuesService.illegalchar;
 
     $scope.passwordsmatch = CheckValuesService.passwordsmatch;
-
-
-
-
+    
+    $scope.checkemail = CheckValuesService.checkemail;
+    
+    $scope.inpast = CheckValuesService.inpast;
+    
     $scope.createnewuser = function (user) {
+        
+        // console.log('click');
+        // console.log('$scope.stringmissing(user.password1) == false',$scope.stringmissing(user.password1));
+        // console.log('$scope.tooshort(user.password1) == false',$scope.tooshort(user.password1));
+        // console.log('$scope.toolong(user.password1) == false',$scope.toolong(user.password1));
+        // console.log('$scope.missingnumber(user.password1) == false',$scope.missingnumber(user.password1));
+        // console.log('$scope.nolowercaselatter(user.password1) == false',$scope.nolowercaselatter(user.password1));
+        // console.log('$scope.nouppercaseletter(user.password1) == false',$scope.nouppercaseletter(user.password1));
+        // console.log('$scope.illegalchar(user.password1) == false',$scope.illegalchar(user.password1));
+        // console.log('$scope.passwordsmatch(user.password1,user.password2) == false',$scope.passwordsmatch(user.password1,user.password2));
+        // console.log('$scope.illegalchar(user.name) == false',$scope.illegalchar(user.name));
+        // console.log('$scope.tooshort(user.name) == false',$scope.tooshort(user.name)); 
+        
 
-        if ($scope.stringmissing == false && $scope.toshort == false && $scope.tolong == false && $scope.missingnumber == false
-            && $scope.nolowercaselatter == false && $scope.nouppercaseletter == false && $scope.illegalchar == false && $scope.passwordsmatch == false) {
+        if ($scope.stringmissing(user.password1) == false && $scope.tooshort(user.password1) == false && 
+        $scope.toolong(user.password1) == false && $scope.missingnumber(user.password1) == false
+            && $scope.nolowercaselatter(user.password1) == false && $scope.nouppercaseletter(user.password1) == false
+            && $scope.illegalchar(user.password1) == false && $scope.passwordsmatch(user.password1,user.password2) == false
+            && $scope.illegalchar(user.name) == false && $scope.tooshort(user.name) == false) {
+            console.log('creating new user','cond ok',user);
 
             user_ref.createUser({
                 email: user.email,
@@ -47,7 +65,15 @@ function PasswordController($scope, CheckValuesService, refFac) {
                             console.log("Error creating user:", error);
                     }
                 } else {
-                    console.log("Successfully created user account with uid:", userData.uid);
+                console.log("Successfully created user account with uid:", userData.uid);
+                accessFac.access = true;
+                accessFac.username = user.name;                
+                //add user
+                var tempuser = {name:user.name,email:user.email,id:userData.uid};
+                user_ref.push(tempuser);                                
+                $scope.$apply(function () {
+                    $location.path('/home');
+                });
                 }
             });
 

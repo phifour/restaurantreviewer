@@ -1,4 +1,3 @@
-
 app.controller('MainController', ['$scope', '$rootScope', '$firebaseArray',
     '$routeParams', 'accessFac', '$location', '$http',
     '$q', 'FourSquareService', 'CheckValuesService', 'AuthentificationService', 'refFac', MainController]);
@@ -7,17 +6,55 @@ function MainController($scope, $rootScope, $firebaseArray, $routeParams,
     accessFac, $location, $http, $q, FourSquareService, CheckValuesService, AuthentificationService, refFac) {
 
 
-    $scope.parseDate = function (x) {
-        if (x != null) {
-            var date = Date.parse(x);
-            var myDate = new Date(date);
-            return myDate.getDate() + "." + myDate.getMonth() + "." + myDate.getFullYear() + " at " + myDate.toLocaleTimeString();
-            //toTimeString();//toUTCString();//.toLocaleDateString();//toLocaleDateString(); //.toDateString();
-        } else {
-            return "Not availabe";
-        }
-    }
+    $scope.stringmissing = CheckValuesService.stringmissing;
 
+    $scope.tooshort = CheckValuesService.tooshort;
+
+    $scope.toolong = CheckValuesService.toolong;
+
+    $scope.missingnumber = CheckValuesService.missingnumber;
+
+    $scope.nolowercaselatter = CheckValuesService.nolowercaselatter;
+
+    $scope.nouppercaseletter = CheckValuesService.nouppercaseletter;
+
+    $scope.illegalchar = CheckValuesService.illegalchar;
+
+    $scope.passwordsmatch = CheckValuesService.passwordsmatch;
+    
+    $scope.checkemail = CheckValuesService.checkemail;
+    
+    $scope.inpast = CheckValuesService.inpast;
+
+    $scope.criteriatype = "All types";
+    $scope.criteriaprice = "All prices";
+    $scope.criteriarating = "All ratings";
+    
+    $scope.starrating = {};
+    $scope.starrating['onestar'] = 1;
+    $scope.starrating['twostar'] = 2;
+    $scope.starrating['threestar'] = 3;
+    $scope.starrating['fourstar'] = 4;
+    $scope.starrating['fivestar'] = 5;
+            
+    $rootScope.restaurants = [];
+
+    var restaurant_ref = refFac.restaurant_ref();
+
+    $scope.username = accessFac.getuser();
+    
+    $scope.refratings = $firebaseArray(restaurant_ref); 
+    
+    $scope.testarray = undefined;
+
+    $scope.refratings.$loaded().then(function (x) {
+        $scope.testarray = x;
+        console.log('testarray',x);
+    })
+        .catch(function (error) {
+            console.log("Error:", error);
+        });
+    
     $scope.getAccess = function () {
         accessFac.getPermission();       //call the method in acccessFac to allow the user permission.
     }
@@ -26,21 +63,33 @@ function MainController($scope, $rootScope, $firebaseArray, $routeParams,
         if (x==undefined){
             return 'You are not logged in';
         }else{
-            return 'logged in as' + x;
+            return 'logged in as ' + x;
+        }
+    }
+    
+    $scope.notloggedin = function(username){
+        if (username==undefined){
+            return true;
+        }else{
+            return false;
         }
     }
 
-    $scope.username = accessFac.getuser();
-
-    $scope.params = $routeParams;
-
-    $scope.authData = undefined;
-
-    $scope.criteriatype = "All types";
-    $scope.criteriaprice = "All prices";
-    $scope.criteriarating = "All ratings";
-            
-    $rootScope.restaurants = [];
+    $scope.swither = function(x,y,z){
+        if (x==undefined){
+            return z;
+        }else{
+            return y;
+        }
+    }
+   
+   $scope.booleanswither = function(x,y,z){
+        if (x==true){
+            return z;
+        }else{
+            return y;
+        }
+    }
 
     // Create our Firebase reference
     var ref = new Firebase("https://flickering-inferno-6917.firebaseio.com");
@@ -59,140 +108,26 @@ function MainController($scope, $rootScope, $firebaseArray, $routeParams,
         }
     }
 
-    // $scope.authfacebook = function () {
-
-    //     ref.authWithOAuthPopup("facebook", function (error, authData) {
-    //         if (error) {
-    //             console.log("Login Failed!", error);
-    //         } else {
-    //             // the access token will allow us to make Open Graph API calls
-    //             console.log(authData.facebook.accessToken);
-    //             console.log(authData.facebook.email);
-    //             console.log(authData.facebook.user_likes);
-    //             console.log(authData.uid);
-      
-    //             $rootScope.login = getName(authData);
-                
-    //             $scope.user = {
-    //                 "id": authData.uid,
-    //                 "name": getName(authData),
-    //                 "provider": authData.provider,
-    //                 "email": authData.facebook.email
-    //             };
-
-    //             //console.log($scope.user);
-
-
-    //             // $scope.$apply();
-
-    //             ref.child("users").child(authData.uid).set({
-    //                 provider: authData.provider,
-    //                 name: getName(authData)
-    //             });
-                
-    //             accessFac.access = true;
-    //             accessFac.username = $scope.user.name;                          
-    //             $scope.$apply(function() {              
-    //                 $location.path('/home');
-    //             });
-               
-
-    //         }
-    //     }, {
-    //             remember: "sessionOnly",
-    //             scope: "email,user_likes" // the permissions requested
-    //         });
-
-    // };
-
-
-    // var foursquarefcnt = FourSquareService.getvenues;
-        
-    // function getfoursquare(foursquarekeyword,fourquarecity){
-    //     // $scope.foursquarestate.visible = true;
-    //     foursquarefcnt(foursquarekeyword,fourquarecity)
-    //     .then(function (data, status, headers, config) {  
-    //             // console.log("data.respons", data.data.response.venues);
-    //             var getphotos = FourSquareService.getphotos;
-    //             var getratings = FourSquareService.getratings;
-    //             return {photos:getphotos(data.data.response.venues),data:data,ratings:getratings(data.data.response.venues)};
-
-    //         ;}).then(function(data){
-                                                
-    //             $q.all(data.photos)
-    //                 .then(function (responsesArray) {
-    //                       $scope.restaurants = [];
-
-    //                     for (var i = 0; i < responsesArray.length; i++) {
-    //                        //console.log('responsesArray',responsesArray[i]);                                                      
-    //                         var image_url = responsesArray[i].data.response.photos.items[0];
-    //                         // console.log('restaurent',data.data.data.response);
-    //                         var name = data.data.data.response.venues[i].name;
-    //                         var link = data.data.data.response.venues[i].url;
-    //                         var address = data.data.data.response.venues[i].location.address;
-    //                         var id = data.data.data.response.venues[i].id;
-    //                         // console.log('id',id);
-    //                         try {
-                                
-    //                             var myrating = undefined;
-    
-    //                             var img = { url: image_url.prefix + imgsize + image_url.suffix, name: name,
-    //                             address: address, link: link, id:id,
-    //                             myrating:myrating,rating:'No rating available'};
-
-    //                             $scope.restaurants.push(img);
-    //                             $scope.restaurant_by_id[id] = img;
-    //                         }
-    //                         catch (err) {
-    //                             console.log(name,err.message);
-    //                         }
-
-    //                     }
-
-    //                    $scope.apply;                                                                                 
-    //                 }); 
-                    
-                    
-    //                 $q.all(data.ratings)
-    //                 .then(function (responsesArray) {
-    //                     for (var i = 0; i < responsesArray.length; i++) {
-    //                       console.log('responsesArrayxxx',responsesArray[i].data.response.venue);
-    //                       //console.log('responsesArrayxxx / rating',responsesArray[i].data.response.venue.rating);
-    //                       $scope.restaurants[i].rating = responsesArray[i].data.response.venue.rating;
-    //                       if (responsesArray[i].data.response.venue.attributes.groups[0].summary==undefined){
-    //                            $scope.restaurants[i]['price'] = 'N.A.';
-    //                       }else{
-    //                            $scope.restaurants[i]['price'] = responsesArray[i].data.response.venue.attributes.groups[0].summary;
-    //                       }                                                   
-    //                     }
-    //                 }); 
-                                                                                                             
-    //         });
-            
-          
-    // }
-
-
     $scope.logout = function () {
         ref.unauth();
         $location.path('/login');
     }
-
-    $scope.removeEvent = function (item) {
-        $scope.events.$remove(item).then(function (ref) {
-            $scope.events === item.$id; // true
-        });
-    };
-
-    $scope.checkeditmode = function (item) {
-        if (item.editmode == null) {
-            return false;
-        } else {
-            return true;
-        }
-    };
-
+    
+    $scope.login = function () {
+        ref.unauth();
+        $location.path('/login');
+    }
+  
     $scope.loginwithpassword = function (user) {
+        
+        user_ref.orderByChild("email").equalTo(user.email).on("child_added", function (userdata) {
+            console.log('Userdata XXX',userdata.val());
+            accessFac.username = userdata.val().name;//email
+            $scope.username = userdata.val().name;
+            console.log('$scope.username',$scope.username)
+        });
+        
+        
         ref.authWithPassword({
             "email": user.email,
             "password": user.password
@@ -201,8 +136,7 @@ function MainController($scope, $rootScope, $firebaseArray, $routeParams,
                 console.log("Login Failed!", error);
             } else {
                 console.log("Authenticated successfully with payload:", authData);
-                accessFac.access = true;
-                accessFac.username = user.email;
+                accessFac.access = true;                
                 $scope.$apply(function () {
                     $location.path('/home');
                 });
@@ -210,47 +144,26 @@ function MainController($scope, $rootScope, $firebaseArray, $routeParams,
         });
     };
 
+     $scope.showDate = function(date1) {
+        var myDate1 = new Date(date1);
+        return myDate1.getDate() + "." + myDate1.getMonth() + "." + myDate1.getFullYear();        
+    }
+     
+    $scope.rate = 7;
+    $scope.max = 5;
+    $scope.isReadonly = false;
 
+  $scope.hoveringOver = function(value) {
+    $scope.overStar = value;
+    $scope.percent = 100 * (value / $scope.max);
+  };
 
-    $scope.$watch('criteriaprice',
-        function (newValue, oldValue) {
-            console.log('criteriaprice', $scope.criteriaprice);
-        }
-        );
-
-
-
-    $scope.filterRestaurants = function(element) {
-
-        // if ($scope.criteriatype !== 'All types')
-        // {
-        //     if (!element.type.includes($scope.criteriatype))
-        //         return false;
-        // }
-        if ($scope.criteriaprice != 'All prices')
-        {
-            if (element.price != $scope.criteriaprice)
-                return false;
-        }
-        // if ($scope.criteriarating != 'All ratings')
-        // {
-        //     if (element.rating != $scope.criteriarating)
-        //         return false;
-        // }
-        return true;
-
-    };
-
-
-
-
-
-
-
-
-
-
-
+  $scope.ratingStates = [
+    {stateOn: 'glyphicon-ok-sign', stateOff: 'glyphicon-ok-circle'},
+    {stateOn: 'glyphicon-star', stateOff: 'glyphicon-star-empty'},
+    {stateOn: 'glyphicon-heart', stateOff: 'glyphicon-ban-circle'},
+    {stateOn: 'glyphicon-heart'},
+    {stateOff: 'glyphicon-off'}
+  ]; 
+    
 };
-
-
