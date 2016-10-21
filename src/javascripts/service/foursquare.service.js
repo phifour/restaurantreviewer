@@ -70,7 +70,7 @@ function FourSquareService($http, $q) {
         // console.log("$scope.locations", $scope.locations);
         list_of_promisses = [];
         for (var i = 0; i < list_of_ids.length; i++) {
-            console.log("id rating", list_of_ids[i].id);
+            // console.log("id rating", list_of_ids[i].id);
             var id = list_of_ids[i].id;
             var photourl = 'https://api.foursquare.com/v2/venues/' + id;
             var api1 = $http({

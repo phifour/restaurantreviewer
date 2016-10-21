@@ -1,17 +1,16 @@
-Meetup/Event Planer
-===================
+# Restaurant Reviewer
 
-This program has been written in AngularJS and uses Firebase as backend. Furthermore Foursquare is used as location recommendation engine.
+This app shows restaurants in Vienna. The app supports filtering (price, type, rating) as well as ratings.
+This program has been written in AngularJS and uses Firebase as backend.
 
-To install open a terminal and type
+## Build Process
 
-git clone https://github.com/phifour/EventPlaner.git eventplaner
+To install open a terminal and type:
 
-cd eventplaner
+- git clone https://github.com/phifour/restaurantreviewer.git restaurantreviewer
+- cd restaurantreviewer
+- npm install
+- gulp build
+- gulp serve
 
-npm install
-
-gulp build
-
-gulp serve
 

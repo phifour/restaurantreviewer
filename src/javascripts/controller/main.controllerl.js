@@ -121,10 +121,10 @@ function MainController($scope, $rootScope, $firebaseArray, $routeParams,
     $scope.loginwithpassword = function (user) {
         
         user_ref.orderByChild("email").equalTo(user.email).on("child_added", function (userdata) {
-            console.log('Userdata XXX',userdata.val());
+            // console.log('Userdata XXX',userdata.val());
             accessFac.username = userdata.val().name;//email
             $scope.username = userdata.val().name;
-            console.log('$scope.username',$scope.username)
+            // console.log('$scope.username',$scope.username)
         });
         
         

@@ -1,7 +1,7 @@
 {% include "shared/header.html" %}
 <div class="container" ng-controller="AddEventController">
     <center>
-        <h2>Restaurants</h2></center>
+        <h2>Restaurants in Vienna</h2></center>
 
     {% raw %}
 
@@ -48,7 +48,7 @@
                 <tbody>
                                                             
                      <tr>
-                        <td>Restaurant type</td>
+                        <td>Type</td>
                         <td><strong>{{restaurant.type}}</strong></td>
                     </tr>
                     
@@ -64,19 +64,19 @@
                         <td><strong>Rating on Foursquare</strong></td>
                         <td><strong>{{restaurant.rating}}</strong></td>
                     </tr>-->
-
+<!--<span class="glyphicon glyphicon-home"></span>-->
                     <tr>
-                        <td><span class="glyphicon glyphicon-home"></span></td>
+                        <td>Adress</td>
                         <td><strong> {{restaurant.address}}</strong></td>
                     </tr>
 
                     <tr>
-                        <td><span class="glyphicon glyphicon-euro">Price</span></td>
+                        <td>Price</td>
                         <td> <strong> {{restaurant.price}}</strong></td>
                     </tr>
 
                     <tr>
-                      <td><span class="glyphicon glyphicon-euro">Open</span></td>
+                      <td>Opening hours</td>
                        <td>                     
                            <small>
                                 Monday: {{restaurant.hours.Mon}}.
@@ -108,7 +108,7 @@
                                 <div ng-repeat="x in refratings.$getRecord(restaurant.id)">
                                     <div class="well" tabindex="0">
                                         <uib-rating ng-model="x.myrating" max="max" read-only="true" on-hover="hoveringOver(value)" on-leave="overStar = null" titles="['one','two','three']" tabindex="-1"></uib-rating>                                                                              
-                                        <p>{{x.user}}, {{showDate(x.date)}}</p>
+                                        <p><strong>Reviewer: </strong>{{x.user}}, {{showDate(x.date)}}</p>
                                         <p><strong>Review: </strong>{{x.review}}</p>
                                     </div>
                                 </div>
