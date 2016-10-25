@@ -32,8 +32,7 @@
             </select>
         </div>
 
-
-    <div ng-repeat="restaurant in objtoarray(restaurant_by_id)| filter: filterRestaurants as filtered" class="col-xs-6">
+    <div ng-repeat="restaurant in objtoarray(restaurant_by_id)| filter: filterRestaurants as filtered" class="col-sm-6">
     <!--<div ng-repeat="(key,restaurant) in restaurant_by_id" class="col-xs-6">-->
         <div class="well">
 
@@ -60,11 +59,6 @@
                         </td>
                     </tr>
                     
-                    <!--<tr>
-                        <td><strong>Rating on Foursquare</strong></td>
-                        <td><strong>{{restaurant.rating}}</strong></td>
-                    </tr>-->
-<!--<span class="glyphicon glyphicon-home"></span>-->
                     <tr>
                         <td>Adress</td>
                         <td><strong> {{restaurant.address}}</strong></td>
